@@ -1,13 +1,15 @@
 # Project Auth API
 
-Replace this readme with your own information about your project.
+Our project needs two parts; a backend API, and a React frontend. We need to create a `User` model using mongoose, with properties for our registered user, and to store a user's access token.
 
-Start by briefly describing the assignment in a sentence or two. Keep it short and to the point.
+Then, on the frontend side of things, we need to build up a registration form that POSTs to our API. We need to store the access token you get back in the browser using local storage, and then use that token when making other requests to our API.
+
+Once a user is logged in, we will need to have one last endpoint which returns some content which only logged-in users should be able to access. You can choose what you want this endpoint to return, and if you want to make multiple endpoints, that's fine too. It could return hard-coded data or something from the database - either is fine. Whatever you choose, it should be displayed in the frontend after you've logged in.
 
 ## The problem
 
-Describe how you approached to problem, and what tools and techniques you used to solve it. How did you plan? What technologies did you use? If you had more time, what would be next?
+We had problems with implementing the accessToken and how to passed it to the header when fetching the API. Then, to navigate the user to the main or login page, depending on if the user already logged in or not.
 
 ## View it live
 
-Every project should be deployed somewhere. Be sure to include the link to the deployed project so that the viewer can click around and see what it's all about.
+https://project-auth-anki-suki.netlify.app
