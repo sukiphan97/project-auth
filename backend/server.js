@@ -15,11 +15,22 @@ const port = process.env.PORT || 8080;
 const app = express();
 
 const ThoughtSchema = new mongoose.Schema({
+  username: {
+    type: String,
+  },
   message: {
     type: String,
   },
   accessToken: {
     type: String
+  },
+  createdAt: {
+    type: Date,
+    default: () => new Date()
+  },
+  hearts: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -64,22 +75,21 @@ const authenticateUser = async (req, res, next) => {
 
 // Start defining your routes here
 
-// app.get("/", (req, res) => {
-//   res.send("Hello Technigo!");
-// });
-
 app.get('/thoughts', authenticateUser)
 app.get('/thoughts', async (req, res) => {
   const thoughts= await Thoughts.find({ })
+  .sort({ createdAt: 'desc' })
+  .limit(20)
   res.status(201).json(thoughts)
 })
 
 //POST NEW THOUGHTS
 app.post('/newthought', async (req, res) => {
 
-  const newThought = await new Thoughts({message: req.body.message, accessToken: req.headers.authorization}).save();
+  const newThought = await new Thoughts({username: req.body.username, message: req.body.message, accessToken: req.headers.authorization}).save();
   res.status(201).json({
-    response: newThought
+    response: newThought,
+    success: 'true'
   })
 })
 
@@ -133,6 +143,18 @@ app.post('/signin', async (req, res) => {
         success: false
       })
     }
+  } catch (error) {
+    res.status(400).json({ response: error, success: false })
+  }
+})
+
+//HEARTS
+app.post('/:thoughtId/like', async (req, res) => {
+  const { thoughtId } = req.params;
+
+  try {
+    const updatedLike = await Thoughts.findByIdAndUpdate(thoughtId, { $inc: { hearts: 1 } });
+    res.status(200).json({ response: updatedLike, success: true})
   } catch (error) {
     res.status(400).json({ response: error, success: false })
   }
