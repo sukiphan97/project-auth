@@ -14,6 +14,16 @@ mongoose.Promise = Promise;
 const port = process.env.PORT || 8080;
 const app = express();
 
+const ThoughtSchema = new mongoose.Schema({
+  message: {
+    type: String,
+  },
+  accessToken: {
+    type: String
+  }
+})
+
+
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -30,6 +40,7 @@ const UserSchema = new mongoose.Schema({
   }
 })
 
+const Thoughts = mongoose.model('Thoughts', ThoughtSchema)
 const User = mongoose.model('User', UserSchema)
 
 // Add middlewares to enable cors and json body parsing
@@ -58,10 +69,21 @@ const authenticateUser = async (req, res, next) => {
 // });
 
 app.get('/thoughts', authenticateUser)
-app.get('/thoughts', (req, res) => {
-  res.send('Here are your thoughts')
+app.get('/thoughts', async (req, res) => {
+  const thoughts= await Thoughts.find({ })
+  res.status(201).json(thoughts)
 })
 
+//POST NEW THOUGHTS
+app.post('/newthought', async (req, res) => {
+
+  const newThought = await new Thoughts({message: req.body.message, accessToken: req.headers.authorization}).save();
+  res.status(201).json({
+    response: newThought
+  })
+})
+
+//SIGN UP
 app.post('/signup', async (req, res) => {
   const { username, password } = req.body
   try {
@@ -89,6 +111,7 @@ app.post('/signup', async (req, res) => {
   }
 })
 
+//SIGN IN
 app.post('/signin', async (req, res) => {
   const { username, password } = req.body
 
